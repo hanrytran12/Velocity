@@ -14,4 +14,6 @@ public class Order
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     public Payment? Payment { get; set; }
     public ReturnRequest? ReturnRequest { get; set; }
+    public ApplicationUser? Customer { get; set; }
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

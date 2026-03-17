@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Infrastructure.Persistence;
 
-public class VelocityDbContext : IdentityDbContext<IdentityUser>
+public class VelocityDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     public VelocityDbContext(DbContextOptions<VelocityDbContext> options) : base(options)
     {
@@ -24,5 +24,17 @@ public class VelocityDbContext : IdentityDbContext<IdentityUser>
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<ApplicationUser>())
+        {
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

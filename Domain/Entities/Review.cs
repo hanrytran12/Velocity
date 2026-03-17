@@ -12,4 +12,5 @@ public class Review
     
     public Product? Product { get; set; }
     public Order? Order { get; set; }
+    public ApplicationUser? Customer { get; set; }
 }

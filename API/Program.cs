@@ -1,9 +1,11 @@
+using Application;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplications();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

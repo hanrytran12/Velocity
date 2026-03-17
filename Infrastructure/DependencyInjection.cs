@@ -17,6 +17,9 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString,
                 m => m.MigrationsAssembly(typeof(VelocityDbContext).Assembly.FullName)));
 
+        services.AddScoped<Application.Interfaces.IVNPayService, Infrastructure.Services.VNPayService>();
+        services.AddScoped<Domain.Interfaces.IUnitOfWork, Infrastructure.Persistence.UnitOfWork>();
+
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
         {
             options.Password.RequireDigit = false;

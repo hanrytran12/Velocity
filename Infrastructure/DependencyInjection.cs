@@ -17,7 +17,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString,
                 m => m.MigrationsAssembly(typeof(VelocityDbContext).Assembly.FullName)));
 
-        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
         {
             options.Password.RequireDigit = false;
             options.Password.RequiredLength = 6;

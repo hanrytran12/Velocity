@@ -28,7 +28,7 @@ public class IdentityService : IIdentityService
         var result = await _userManager.CheckPasswordAsync(user, password);
         if (!result) return Result<(Guid, string, string)>.Failure("Invalid credentials.");
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtToken(user);
         return Result<(Guid, string, string)>.Success((user.Id, user.FullName, token));
     }
 
@@ -53,10 +53,18 @@ public class IdentityService : IIdentityService
         return Result<Guid>.Success(user.Id);
     }
 
-    private string GenerateJwtToken(ApplicationUser user)
+    public async Task<bool> IsInRoleAsync(Guid userId, string roleName)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        return user != null && await _userManager.IsInRoleAsync(user, roleName);
+    }
+
+    private async Task<string> GenerateJwtToken(ApplicationUser user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var roles = await _userManager.GetRolesAsync(user);
 
         var claims = new List<Claim>
         {
@@ -65,6 +73,11 @@ public class IdentityService : IIdentityService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim("FullName", user.FullName)
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var token = new JwtSecurityToken(
             _jwtSettings.Issuer,

@@ -15,6 +15,8 @@ public class Order
     public DateTime? ShippedAt { get; set; }
     public DateTime? DeliveredAt { get; set; }
     public DateTime? CompletedAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
+    public DateTime? ReturnedAt { get; set; }
     
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     public Payment? Payment { get; set; }

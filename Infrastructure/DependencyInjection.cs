@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -21,6 +22,8 @@ public static class DependencyInjection
         services.AddScoped<Application.Interfaces.IVNPayService, Infrastructure.Services.VNPayService>();
         services.AddScoped<Domain.Interfaces.IUnitOfWork, Infrastructure.Persistence.UnitOfWork>();
         services.AddScoped<Application.Interfaces.IIdentityService, Infrastructure.Identity.IdentityService>();
+
+        services.AddHostedService<OrderCompletionBackgroundService>();
 
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
         {

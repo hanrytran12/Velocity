@@ -1,4 +1,5 @@
 using Application.Features.Orders.Commands.AddReview;
+using Application.Features.Orders.Commands.CancelOrder;
 using Application.Features.Orders.Commands.Checkout;
 using Application.Features.Orders.Commands.CompleteOrder;
 using Application.Features.Orders.Commands.ConfirmOrder;
@@ -111,5 +112,22 @@ public class OrdersController : ControllerBase
         var result = await _mediator.Send(command);
 
         return result.IsSuccess ? Ok("Review submitted successfully.") : BadRequest(result.Error);
+    }
+
+    [HttpPut("{orderId}/cancel")]
+    [Authorize(Roles = $"{UserRoles.Customer},{UserRoles.Admin}")]
+    public async Task<IActionResult> CancelOrder(Guid orderId, [FromBody] CancelOrderRequest request)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                          ?? User.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+            return Unauthorized("User ID not found in token.");
+
+        var userId = Guid.Parse(userIdClaim);
+        var command = new CancelOrderCommand(orderId, userId, request.Reason);
+        var result = await _mediator.Send(command);
+
+        return result.IsSuccess ? Ok("Order cancelled successfully.") : BadRequest(result.Error);
     }
 }

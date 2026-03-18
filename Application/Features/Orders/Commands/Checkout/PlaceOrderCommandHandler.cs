@@ -93,7 +93,7 @@ public class PlaceOrderCommandHandler : IRequestHandler<PlaceOrderCommand, Resul
             // 3. Persistence
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
-
+    
             string? paymentUrl = null;
             if (request.PaymentMethod == PaymentMethod.Online)
             {

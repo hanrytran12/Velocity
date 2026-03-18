@@ -7,6 +7,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Microsoft.AspNetCore.Authorization.Authorize]
 public class OrdersController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -19,9 +20,15 @@ public class OrdersController : ControllerBase
     [HttpPost("checkout")]
     public async Task<IActionResult> Checkout([FromBody] CheckoutRequest request)
     {
-        // TODO: Get CustomerId from authenticated user.
-        // For now, we take it from the request or use a default one for testing.
-        var customerId = request.CustomerId; 
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
+                          ?? User.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+
+        var customerId = Guid.Parse(userIdClaim);
 
         var command = new PlaceOrderCommand(
             customerId,

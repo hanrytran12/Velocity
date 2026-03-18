@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,7 @@ public static class DependencyInjection
 
         services.AddScoped<Application.Interfaces.IVNPayService, Infrastructure.Services.VNPayService>();
         services.AddScoped<Domain.Interfaces.IUnitOfWork, Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<Application.Interfaces.IIdentityService, Infrastructure.Identity.IdentityService>();
 
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
         {
@@ -30,6 +32,30 @@ public static class DependencyInjection
         })
         .AddEntityFrameworkStores<VelocityDbContext>()
         .AddDefaultTokenProviders();
+
+        var jwtSettings = new Infrastructure.Identity.JwtSettings();
+        configuration.GetSection("JwtSettings").Bind(jwtSettings);
+        services.AddSingleton(jwtSettings);
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings.Issuer,
+                ValidAudience = jwtSettings.Audience,
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                    System.Text.Encoding.UTF8.GetBytes(jwtSettings.Secret))
+            };
+        });
 
         return services;
     }

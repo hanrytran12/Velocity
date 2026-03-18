@@ -1,4 +1,6 @@
+using Application.Features.Orders.Commands.AddReview;
 using Application.Features.Orders.Commands.Checkout;
+using Application.Features.Orders.Commands.CompleteOrder;
 using Application.Features.Orders.Commands.ConfirmOrder;
 using Application.Features.Orders.Commands.DeliverOrder;
 using Application.Features.Orders.Commands.DispatchOrder;
@@ -76,5 +78,38 @@ public class OrdersController : ControllerBase
     {
         var result = await _mediator.Send(new DeliverOrderCommand(orderId));
         return result.IsSuccess ? Ok("Order delivered successfully.") : BadRequest(result.Error);
+    }
+
+    [HttpPut("{orderId}/complete")]
+    [Authorize(Roles = UserRoles.Customer)]
+    public async Task<IActionResult> CompleteOrder(Guid orderId)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                          ?? User.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+            return Unauthorized("User ID not found in token.");
+
+        var customerId = Guid.Parse(userIdClaim);
+        var result = await _mediator.Send(new CompleteOrderCommand(orderId, customerId));
+        
+        return result.IsSuccess ? Ok("Order completed successfully.") : BadRequest(result.Error);
+    }
+
+    [HttpPost("{orderId}/reviews")]
+    [Authorize(Roles = UserRoles.Customer)]
+    public async Task<IActionResult> AddReview(Guid orderId, [FromBody] AddReviewRequest request)
+    {
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                          ?? User.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+            return Unauthorized("User ID not found in token.");
+
+        var customerId = Guid.Parse(userIdClaim);
+        var command = new AddReviewCommand(customerId, orderId, request.ProductId, request.Rating, request.Comment);
+        var result = await _mediator.Send(command);
+
+        return result.IsSuccess ? Ok("Review submitted successfully.") : BadRequest(result.Error);
     }
 }

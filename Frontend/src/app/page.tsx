@@ -1,17 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import ProductCard from "@/components/ProductCard";
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  
   const eliteSelection = [
     { 
       id: 1, 
@@ -54,73 +46,10 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-white text-neutral-900 selection:bg-orange-500 selection:text-white pt-20">
-      {/* Header / Navigation Bar (Matched to design) */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm py-3' : 'bg-[#F2F5F7]/50 backdrop-blur-sm py-5'}`}>
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-12 flex items-center justify-between gap-8">
-          {/* Logo */}
-          <div className="flex items-center gap-3 group cursor-pointer shrink-0">
-            <div className="w-10 h-10 bg-[#FF5E1F] rounded-lg flex items-center justify-center transition-transform group-hover:scale-110">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13 3L4 14H11L11 21L20 10H13V3Z" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <span className="text-xl font-black tracking-tighter uppercase text-[#1A2E35]">VELOCITY</span>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="hidden lg:flex items-center gap-10 whitespace-nowrap">
-            {['Category', 'New Arrivals'].map((item) => (
-              <a key={item} href="#" className="text-[14px] font-bold text-[#1A2E35] hover:text-orange-500 transition-colors uppercase tracking-tight">
-                {item}
-              </a>
-            ))}
-            <a href="#" className="text-[14px] font-bold text-[#FF5E1F] hover:text-orange-600 transition-colors uppercase tracking-tight">
-              Sale
-            </a>
-          </div>
-
-          {/* Search Bar */}
-          <div className="hidden md:flex flex-grow max-w-xl mx-4 relative">
-            <div className="w-full relative">
-              <input 
-                type="text" 
-                placeholder="Search elite gear..." 
-                className="w-full bg-[#F2F5F7] border-none rounded-full py-3.5 pl-14 pr-6 text-sm font-medium focus:ring-2 focus:ring-orange-500/20 transition-all placeholder:text-neutral-400"
-              />
-              <svg className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Right Icons */}
-          <div className="flex items-center gap-8 shrink-0 text-[#6B7280]">
-            <div className="relative cursor-pointer hover:text-[#1A2E35] transition-colors">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path>
-              </svg>
-              <span className="absolute -top-1 -right-1 bg-[#FF5E1F] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
-                3
-              </span>
-            </div>
-            
-            <div className="cursor-pointer hover:text-[#1A2E35] transition-colors">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section (Matched to Card Style Screenshot) */}
+    <main className="min-h-screen bg-white text-neutral-900 pt-20">
+      {/* Hero Section */}
       <section className="px-6 py-10 md:py-16 max-w-screen-2xl mx-auto">
         <div className="relative min-h-[600px] rounded-[40px] overflow-hidden flex items-center">
-          {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
             <Image 
               src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=1600" 
@@ -158,7 +87,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Category Navigation (Circular Style) */}
+      {/* Category Navigation */}
       <section className="px-6 md:px-12 py-12 max-w-screen-2xl mx-auto overflow-x-auto no-scrollbar">
         <div className="flex justify-between items-center min-w-[600px] md:min-w-0 md:px-20">
           {[
@@ -190,7 +119,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Elite Selection Section (Matched to Image) */}
+      {/* Elite Selection Section */}
       <section className="px-6 md:px-12 py-24 max-w-screen-2xl mx-auto border-t border-neutral-100">
         <div className="flex flex-col md:flex-row md:items-start justify-between mb-16 gap-6">
           <div className="space-y-2">
@@ -212,58 +141,12 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
           {eliteSelection.map((product) => (
-            <div key={product.id} className="group cursor-pointer">
-              <div className="relative aspect-square bg-[#F5F5F7] rounded-xl mb-5 overflow-hidden flex items-center justify-center">
-                <Image 
-                  src={product.image} 
-                  alt={product.name}
-                  width={600}
-                  height={600}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 ease-in-out"
-                />
-                
-                {/* Badge (HOT DEAL / NEW) */}
-                {product.badge && (
-                  <div className={`absolute top-4 left-4 ${product.badgeColor} text-white text-[9px] font-black px-2 py-0.5 rounded-sm uppercase tracking-wider`}>
-                    {product.badge}
-                  </div>
-                )}
-
-                {/* Heart Icon */}
-                <button className="absolute top-4 right-4 bg-white text-neutral-900 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-all group-hover:scale-110">
-                  <svg width="18" height="18" fill={product.id === 3 ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="relative">
-                <div className="space-y-1">
-                  <p className={`text-[10px] font-black uppercase tracking-[0.1em] ${product.categoryColor || 'text-neutral-400'}`}>
-                    {product.category}
-                  </p>
-                  <h3 className="font-black text-[17px] uppercase tracking-tight">{product.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <span className="font-black text-[16px]">{product.price}</span>
-                    {product.oldPrice && (
-                      <span className="text-neutral-400 text-[13px] line-through font-bold">{product.oldPrice}</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Swatches at bottom right of text zone */}
-                <div className="absolute bottom-1 right-0 flex gap-1.5">
-                  {product.swatches?.map((color, idx) => (
-                    <div key={idx} className="w-2.5 h-2.5 rounded-full ring-1 ring-neutral-200" style={{ backgroundColor: color }}></div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
 
-      {/* Join The Velocity Club (Matched to Orange Screenshot) */}
+      {/* Join The Velocity Club */}
       <section className="px-6 md:px-12 py-24 max-w-screen-2xl mx-auto">
         <div className="bg-[#FF5E1F] p-12 md:p-20 rounded-[40px] flex flex-col md:flex-row items-center gap-10 relative overflow-hidden min-h-[500px]">
           <div className="md:w-1/2 space-y-10 relative z-10 text-white">
@@ -300,70 +183,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer (Polished) */}
-      <footer className="bg-white border-t border-neutral-100 mt-20 pt-24 pb-12">
-        <div className="px-6 md:px-12 max-w-screen-2xl mx-auto flex flex-col gap-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12">
-            <div className="col-span-2 space-y-8">
-              <div className="text-3xl font-black tracking-tighter uppercase flex items-center gap-1 italic">
-                <div className="w-10 h-10 bg-orange-500 rounded-sm flex items-center justify-center text-white italic">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m13 2-2 10h10L11 22l2-10H3l10-10Z"/></svg>
-                </div>
-                <span>Velocity</span>
-              </div>
-              <p className="text-neutral-500 font-medium text-lg leading-relaxed max-w-xs">
-                 Fueling your ambition with world-class performance gear since 2018. Run faster, run longer.
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Shop</h5>
-              <ul className="space-y-4 font-bold text-sm">
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Road Shoes</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Trail Shoes</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Race Day</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Accessories</a></li>
-              </ul>
-            </div>
-
-            <div className="space-y-6">
-              <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Support</h5>
-              <ul className="space-y-4 font-bold text-sm">
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Order Status</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Shipping</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Returns</a></li>
-                <li><a href="#" className="hover:text-orange-500 transition-colors uppercase italic">Contact Us</a></li>
-              </ul>
-            </div>
-
-            <div className="col-span-2 space-y-6">
-              <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Follow Us</h5>
-              <div className="flex gap-4">
-                {[
-                  { id: 'share', path: <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /> },
-                  { id: 'public', path: <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> },
-                  { id: 'alternate_email', path: <path d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /> }
-                ].map((icon) => (
-                  <a key={icon.id} href="#" className="w-12 h-12 rounded-full bg-[#E8EEF5] flex items-center justify-center text-neutral-900 hover:bg-orange-500 hover:text-white transition-all">
-                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                      {icon.path}
-                    </svg>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-neutral-100 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-neutral-400 text-center md:text-left italic">
-            <p>© 2024 Velocity Elite Gear. All rights reserved.</p>
-            <div className="flex gap-8">
-              <a href="#" className="hover:text-orange-500 transition-colors uppercase">Privacy Policy</a>
-              <a href="#" className="hover:text-orange-500 transition-colors uppercase">Terms of Service</a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }
+

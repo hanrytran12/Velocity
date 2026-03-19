@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: {
@@ -19,7 +20,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <div className="group cursor-pointer flex flex-col gap-5">
+    <Link href={`/products/${product.id}`} className="group cursor-pointer flex flex-col gap-5">
       <div className="relative aspect-square bg-[#F3F4F6] rounded-2xl overflow-hidden flex items-center justify-center transition-all group-hover:bg-neutral-200">
         <Image 
           src={product.image} 
@@ -72,8 +73,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
-
-

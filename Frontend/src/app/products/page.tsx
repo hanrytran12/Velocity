@@ -1,11 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import ProductCard from "@/components/ProductCard";
+import { products, Product } from "@/data/products";
 
 export default function ProductsPage() {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Newest");
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [maxPrice, setMaxPrice] = useState(300);
+
+  // Derived unique sizes from product data for synchronization
+  const availableSizes = useMemo(() => {
+    const allSizes = new Set<string>();
+    products.forEach(p => p.sizes.forEach(s => allSizes.add(s)));
+    return Array.from(allSizes).sort((a, b) => parseFloat(a) - parseFloat(b));
+  }, []);
 
   const sortOptions = [
     "Newest",
@@ -14,127 +26,70 @@ export default function ProductsPage() {
     "Trending",
   ];
 
-  const products = [
-    { 
-      id: 1, 
-      name: "Apex Pro V2", 
-      category: "ROAD RUNNING", 
-      price: "$145.00",
-      oldPrice: "$160.00",
-      badge: "SALE",
-      badgeColor: "bg-[#FF5E1F]",
-      rating: 4.8,
-      reviews: 124,
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 2, 
-      name: "Cloud Runner Elite", 
-      category: "ROAD RUNNING", 
-      price: "$160.00",
-      rating: 5.0,
-      reviews: 89,
-      image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 3, 
-      name: "Trail Surge X", 
-      category: "TRAIL RUNNING", 
-      price: "$195.00", 
-      badge: "NEW",
-      badgeColor: "bg-black",
-      rating: 4.7,
-      reviews: 42,
-      image: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 4, 
-      name: "Volt Glide 3", 
-      category: "TRACK & FIELD", 
-      price: "$120.00", 
-      oldPrice: "$155.00",
-      rating: 4.5,
-      reviews: 210,
-      image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 5, 
-      name: "Hyper Track S1", 
-      category: "TRACK & FIELD", 
-      price: "$210.00",
-      rating: 4.9,
-      reviews: 56,
-      image: "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 6, 
-      name: "Gravity Flux V1", 
-      category: "COMFORT DAILY", 
-      price: "$135.00",
-      rating: 4.6,
-      reviews: 188,
-      image: "https://images.unsplash.com/photo-1512374382149-4332c6c021f1?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 7, 
-      name: "Nebula React 9", 
-      category: "ROAD RUNNING", 
-      price: "$175.00",
-      rating: 4.4,
-      reviews: 72,
-      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 8, 
-      name: "Terra Trail", 
-      category: "TRAIL RUNNING", 
-      price: "$140.00",
-      rating: 4.3,
-      reviews: 45,
-      image: "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 9, 
-      name: "Summit Seeker", 
-      category: "ELITE MARATHON", 
-      price: "$250.00",
-      badge: "NEW",
-      badgeColor: "bg-black",
-      rating: 4.9,
-      reviews: 112,
-      image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 10, 
-      name: "Zenith Comfort", 
-      category: "COMFORT DAILY", 
-      price: "$115.00",
-      rating: 4.8,
-      reviews: 156,
-      image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 11, 
-      name: "Phantom Carbon", 
-      category: "ELITE MARATHON", 
-      price: "$280.00",
-      badge: "HOT",
-      badgeColor: "bg-[#FF5E1F]",
-      rating: 5.0,
-      reviews: 94,
-      image: "https://images.unsplash.com/photo-1515955656352-a1fb3d874a7b?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 12, 
-      name: "Aero Glide", 
-      category: "ROAD RUNNING", 
-      price: "$130.00",
-      rating: 4.5,
-      reviews: 68,
-      image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&q=80&w=800" 
-    }
-  ];
+  const toggleBrand = (brand: string) => {
+    setSelectedBrands(prev => {
+      const isSelected = prev.some(b => b.toUpperCase() === brand.toUpperCase());
+      return isSelected 
+        ? prev.filter(b => b.toUpperCase() !== brand.toUpperCase()) 
+        : [...prev, brand];
+    });
+  };
 
+  const toggleCategory = (category: string) => {
+    const formattedCat = category.toUpperCase();
+    setSelectedCategories(prev => 
+      prev.includes(formattedCat) ? prev.filter(c => c !== formattedCat) : [...prev, formattedCat]
+    );
+  };
+
+  const toggleSize = (size: string) => {
+    setSelectedSizes(prev => 
+      prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]
+    );
+  };
+
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    // Filter by Brand
+    if (selectedBrands.length > 0) {
+      result = result.filter(p => 
+        selectedBrands.some(brand => brand.toUpperCase() === p.brand.toUpperCase())
+      );
+    }
+
+    // Filter by Category
+    if (selectedCategories.length > 0) {
+      result = result.filter(p => {
+        const productCat = p.category.toUpperCase();
+        return selectedCategories.some(cat => productCat.includes(cat));
+      });
+    }
+
+    // Filter by Price
+    result = result.filter(p => {
+      const price = parseFloat(p.price.replace('$', ''));
+      return price <= maxPrice;
+    });
+
+    // Filter by Size
+    if (selectedSizes.length > 0) {
+      result = result.filter(p => 
+        p.sizes.some(s => selectedSizes.includes(s))
+      );
+    }
+
+    // Sorting
+    if (sortBy === "Price: Low to High") {
+      result.sort((a, b) => parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', '')));
+    } else if (sortBy === "Price: High to Low") {
+      result.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
+    } else if (sortBy === "Newest") {
+      result.sort((a, b) => b.id - a.id);
+    }
+
+    return result;
+  }, [selectedBrands, selectedCategories, selectedSizes, maxPrice, sortBy]);
 
   return (
     <main className="min-h-screen bg-white text-[#1A2E35] pt-28 pb-20">
@@ -142,7 +97,7 @@ export default function ProductsPage() {
         
         {/* Sidebar Filters */}
         <aside className="hidden lg:block w-72 shrink-0 space-y-10">
-          {/* Sort By (Custom Dropdown to match screenshot) */}
+          {/* Sort By */}
           <div className="space-y-4">
             <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Sort By</h5>
             <div className="relative">
@@ -156,7 +111,6 @@ export default function ProductsPage() {
                 </svg>
               </div>
               
-              {/* Custom Menu */}
               {isSortOpen && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-neutral-200 rounded-lg shadow-xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
                   {sortOptions.map((option) => (
@@ -185,102 +139,155 @@ export default function ProductsPage() {
           <div className="space-y-6">
             <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Price Range</h5>
             <div className="px-2">
-              <div className="relative h-1 bg-neutral-100 rounded-full">
-                <div className="absolute h-full w-2/3 bg-[#FF5E1F] rounded-full left-0"></div>
-                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-4 h-4 bg-[#FF5E1F] rounded-full border-2 border-white shadow-md cursor-pointer"></div>
-                <div className="absolute top-1/2 left-2/3 -translate-y-1/2 w-4 h-4 bg-[#FF5E1F] rounded-full border-2 border-white shadow-md cursor-pointer"></div>
-              </div>
+              <input 
+                type="range" 
+                min="0" 
+                max="300" 
+                step="10"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                className="w-full h-1 bg-neutral-100 rounded-full appearance-none cursor-pointer accent-[#FF5E1F]"
+              />
               <div className="flex justify-between mt-4 text-[13px] font-bold text-neutral-400">
                 <span>$0</span>
-                <span className="text-[#1A2E35]">$300+</span>
+                <span className="text-[#1A2E35]">${maxPrice}{maxPrice === 300 ? '+' : ''}</span>
               </div>
             </div>
           </div>
 
           {/* Shoe Size */}
-          <div className="space-y-4">
-            <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Shoe Size (EU)</h5>
-            <div className="grid grid-cols-4 gap-2">
-              {['39', '40', '41', '42', '43', '44', '45'].map((size) => (
-                <button key={size} className={`h-10 rounded-lg text-[13px] font-bold border transition-all ${size === '40' ? 'border-[#FF5E1F] bg-[#FF5E1F]/5 text-[#FF5E1F]' : 'border-neutral-100 bg-[#F9FAFB] text-[#1A2E35] hover:border-neutral-300'}`}>
-                  {size}
-                </button>
-              ))}
+          <div className="space-y-6">
+            <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Shoe Size</h5>
+            <div className="grid grid-cols-3 gap-2">
+              {availableSizes.map((size) => {
+                const isSelected = selectedSizes.includes(size);
+                return (
+                  <button 
+                    key={size}
+                    onClick={() => toggleSize(size)}
+                    className={`h-12 rounded-xl text-[13px] font-bold border-2 transition-all ${
+                      isSelected 
+                      ? 'border-black bg-black text-white shadow-lg' 
+                      : 'border-neutral-100 text-neutral-500 hover:border-black'
+                    }`}
+                  >
+                    US {size}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Colors */}
-          <div className="space-y-4">
+          {/* Color Filter (Visual Only) */}
+          <div className="space-y-6">
             <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Colors</h5>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-4">
               {[
-                { hex: '#FF5E1F', active: true },
-                { hex: '#3B82F6', active: false },
-                { hex: '#111111', active: false },
-                { hex: '#10B981', active: false },
-                { hex: '#FFFFFF', active: false }
-              ].map((color, idx) => (
-                <div key={idx} className={`w-7 h-7 rounded-full cursor-pointer ring-offset-2 transition-all ${color.active ? 'ring-2 ring-orange-500' : 'ring-1 ring-neutral-200'}`} style={{ backgroundColor: color.hex }}></div>
+                { name: 'Orange', bg: 'bg-[#FF5E1F]' },
+                { name: 'Red', bg: 'bg-[#EF4444]' },
+                { name: 'Blue', bg: 'bg-[#3B82F6]' },
+                { name: 'Black', bg: 'bg-[#111111]' },
+                { name: 'Green', bg: 'bg-[#10B981]' },
+                { name: 'White', bg: 'bg-white border border-neutral-200' },
+              ].map((color) => (
+                <div key={color.name} className="flex flex-col items-center gap-2 cursor-pointer group">
+                  <div className={`w-8 h-8 rounded-full ${color.bg} ring-2 ring-offset-2 ring-transparent group-hover:ring-[#FF5E1F] transition-all`}></div>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Brand */}
-          <div className="space-y-4">
+          {/* Brand Filter */}
+          <div className="space-y-6">
             <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Brand</h5>
             <div className="space-y-3">
-              {['Nike', 'Adidas', 'Puma', 'Brooks', 'Hoka'].map((brand) => (
-                <label key={brand} className="flex items-center gap-3 cursor-pointer group">
-                  <input type="checkbox" className="w-5 h-5 rounded border-neutral-300 accent-[#FF5E1F] focus:ring-orange-500/20 cursor-pointer" />
-                  <span className="text-sm font-bold text-neutral-500 group-hover:text-[#1A2E35] transition-colors">{brand}</span>
-                </label>
-              ))}
+              {['Nike', 'Adidas', 'ASICS'].map((brand) => {
+                const isSelected = selectedBrands.some(b => b.toUpperCase() === brand.toUpperCase());
+                return (
+                  <label 
+                    key={brand} 
+                    className="flex items-center gap-3 cursor-pointer group"
+                    onClick={() => toggleBrand(brand)}
+                  >
+                    <div className={`w-5 h-5 border-2 rounded-md transition-colors flex items-center justify-center ${isSelected ? 'border-[#FF5E1F] bg-[#FF5E1F]' : 'border-neutral-200 group-hover:border-[#FF5E1F]'}`}>
+                      {isSelected && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
+                    </div>
+                    <span className={`text-[14px] font-bold transition-colors ${isSelected ? 'text-[#1A2E35]' : 'text-neutral-400 group-hover:text-neutral-600'}`}>
+                      {brand}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </div>
 
-          {/* Category */}
-          <div className="space-y-4">
+          {/* Category Filter */}
+          <div className="space-y-6">
             <h5 className="font-black uppercase tracking-widest text-[11px] text-neutral-400">Category</h5>
             <div className="space-y-3">
-              {['Road Running', 'Trail Running', 'Track & Field'].map((cat, idx) => (
-                <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                  <input type="checkbox" defaultChecked={idx === 0} className="w-5 h-5 rounded border-neutral-300 accent-[#FF5E1F] focus:ring-orange-500/20 cursor-pointer" />
-                  <span className="text-sm font-bold text-neutral-500 group-hover:text-[#1A2E35] transition-colors">{cat}</span>
-                </label>
-              ))}
+              {['Road Running', 'Trail Running', 'Track & Field', 'Sportswear'].map((cat) => {
+                const isSelected = selectedCategories.includes(cat.toUpperCase());
+                return (
+                  <label 
+                    key={cat} 
+                    className="flex items-center gap-3 cursor-pointer group"
+                    onClick={() => toggleCategory(cat)}
+                  >
+                    <div className={`w-5 h-5 border-2 rounded-md transition-colors flex items-center justify-center ${isSelected ? 'border-[#FF5E1F] bg-[#FF5E1F]' : 'border-neutral-200 group-hover:border-[#FF5E1F]'}`}>
+                      {isSelected && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
+                    </div>
+                    <span className={`text-[14px] font-bold transition-colors uppercase italic tracking-tighter ${isSelected ? 'text-[#1A2E35]' : 'text-neutral-400 group-hover:text-neutral-600'}`}>
+                      {cat}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </div>
         </aside>
 
-
-        {/* Product Listing Content */}
-        <section className="flex-grow">
-          <div className="mb-10">
-            <h1 className="text-[34px] font-black italic uppercase tracking-tighter leading-none text-[#1A2E35]">
-              MEN'S PERFORMANCE
-            </h1>
-            <p className="text-neutral-400 font-bold text-sm mt-2">24 models found</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-
-          {/* Load More */}
-          <div className="mt-24 flex justify-center">
-            <button className="flex items-center gap-3 px-12 py-5 border-2 border-[#FF5E1F] text-[#FF5E1F] rounded-full font-black uppercase tracking-widest text-[13px] hover:bg-[#FF5E1F] hover:text-white transition-all active:scale-95 group">
-              LOAD MORE GEAR
-              <svg className="group-hover:translate-y-1 transition-transform" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                <path d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-          </div>
-        </section>
+        {/* Main Content */}
+        <div className="flex-grow">
+          {filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16 animate-in fade-in duration-500">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-32 space-y-4">
+              <div className="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-300">
+                <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <p className="text-neutral-400 font-bold italic">No matching models found in this selection.</p>
+              <button 
+                onClick={() => { setSelectedBrands([]); setSelectedCategories([]); setSelectedSizes([]); setMaxPrice(300); }}
+                className="text-[#FF5E1F] font-black uppercase tracking-widest text-[11px] border-b-2 border-[#FF5E1F] pb-0.5"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
+          
+          {filteredProducts.length > 0 && (
+            <div className="mt-24 flex justify-center">
+              <button className="px-12 py-5 bg-[#1A2E35] text-white rounded-full font-black uppercase tracking-widest text-[13px] hover:bg-[#FF5E1F] transition-all shadow-2xl shadow-neutral-200 active:scale-95">
+                Load More Models
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
 }
-
-

@@ -1,49 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { products } from "@/data/products";
 import ProductCard from "@/components/ProductCard";
 
+
 export default function Home() {
-  const eliteSelection = [
-    { 
-      id: 1, 
-      name: "Apex Ghost V4 Pro", 
-      category: "ROAD RUNNING", 
-      price: "$189.99",
-      oldPrice: "$220.00",
-      badge: "HOT DEAL",
-      badgeColor: "bg-[#FF5E1F]",
-      categoryColor: "text-[#FF5E1F]",
-      swatches: ["#FF5E1F", "#3B82F6", "#111111"],
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 2, 
-      name: "Summit Seeker X", 
-      category: "TRAIL EXPLORER", 
-      price: "$145.00",
-      swatches: ["#3B82F6", "#10B981"],
-      image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 3, 
-      name: "Phantom Elite Carbon", 
-      category: "ELITE MARATHON", 
-      price: "$275.00", 
-      badge: "NEW",
-      badgeColor: "bg-[#111111]",
-      swatches: ["#111111"],
-      image: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?auto=format&fit=crop&q=80&w=800" 
-    },
-    { 
-      id: 4, 
-      name: "Velocity Spike V2", 
-      category: "TRACK & FIELD", 
-      price: "$120.00", 
-      swatches: ["#111111"],
-      image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80&w=800" 
-    },
-  ];
+  const eliteSelection = products.slice(-4);
+
+
 
   return (
     <main className="min-h-screen bg-white text-neutral-900 pt-20">
@@ -89,14 +54,14 @@ export default function Home() {
 
       {/* Category Navigation */}
       <section className="px-6 md:px-12 py-12 max-w-screen-2xl mx-auto overflow-x-auto no-scrollbar">
-        <div className="flex justify-between items-center min-w-[600px] md:min-w-0 md:px-20">
+      <div className="flex justify-center items-center gap-12 md:gap-24 px-10">
+
           {[
             { id: 'ROAD', active: true, color: 'bg-[#1A2E35]', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=200' },
             { id: 'TRAIL', active: false, color: 'bg-[#F2F5F7]', img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&q=80&w=200' },
-            { id: 'MARATHON', active: false, color: 'bg-[#F2F5F7]', img: 'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?auto=format&fit=crop&q=80&w=200' },
-            { id: 'SPRINTING', active: false, color: 'bg-[#F2F5F7]', img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80&w=200' },
-            { id: 'COMFORT', active: false, color: 'bg-[#F2F5F7]', img: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&q=80&w=200' }
+            { id: 'TRACK & FIELD', active: false, color: 'bg-[#F2F5F7]', img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80&w=200' }
           ].map((cat) => (
+
             <div key={cat.id} className="flex flex-col items-center gap-4 group cursor-pointer">
               <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all ${
                 cat.active ? 'ring-4 ring-orange-500 ring-offset-4 shadow-xl' : 'hover:scale-105 ring-1 ring-neutral-200 ring-offset-2'

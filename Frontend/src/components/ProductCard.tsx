@@ -21,13 +21,13 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/products/${product.id}`} className="group cursor-pointer flex flex-col gap-5">
-      <div className="relative aspect-square bg-[#F3F4F6] rounded-2xl overflow-hidden flex items-center justify-center transition-all group-hover:bg-neutral-200">
+      <div className="relative aspect-square bg-white rounded-2xl overflow-hidden flex items-center justify-center transition-all group-hover:bg-white shadow-sm border border-neutral-100">
         <Image 
           src={product.image} 
           alt={product.name}
           width={500}
           height={500}
-          className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-in-out"
+          className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-700 ease-in-out"
         />
         
         {/* Heart Icon */}

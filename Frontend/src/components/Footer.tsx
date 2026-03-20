@@ -27,8 +27,8 @@ export default function Footer() {
               <li><Link href="/products" className="text-neutral-500 hover:text-[#FF5E1F] transition-colors uppercase italic tracking-tighter">Road Shoes</Link></li>
               <li><Link href="/products" className="text-neutral-500 hover:text-[#FF5E1F] transition-colors uppercase italic tracking-tighter">Trail Shoes</Link></li>
               <li><Link href="/products" className="text-neutral-500 hover:text-[#FF5E1F] transition-colors uppercase italic tracking-tighter">Race Day</Link></li>
-              <li><Link href="/products" className="text-neutral-500 hover:text-[#FF5E1F] transition-colors uppercase italic tracking-tighter">Accessories</Link></li>
             </ul>
+
           </div>
 
           {/* Support */}

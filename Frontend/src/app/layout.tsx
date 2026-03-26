@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: "Engineered for speed. Built for endurance. Experience the revolutionary carbon-plate technology of the new Apex Pro.",
 };
 
+import { CartProvider } from "@/context/CartContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans bg-white text-neutral-900 antialiased`}>
-        <Header />
-        {children}
-        <Footer />
+        <CartProvider>
+          <Header />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

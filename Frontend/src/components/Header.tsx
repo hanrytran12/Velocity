@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useCart } from "@/context/CartContext";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { totalItems } = useCart();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -56,24 +57,23 @@ export default function Header() {
 
 
         {/* Right Icons */}
-        <div className="flex items-center gap-8 shrink-0 text-[#6B7280]">
-          <div className="relative cursor-pointer hover:text-[#1A2E35] transition-colors">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <div className="flex items-center gap-6 shrink-0 text-[#6B7280]">
+          <Link href="/cart" className="relative cursor-pointer text-neutral-700 hover:text-orange-500 transition-all p-2 rounded-full hover:bg-neutral-50 active:scale-95">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="20" cy="21" r="1"></circle>
               <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path>
             </svg>
-            <span className="absolute -top-1 -right-1 bg-[#FF5E1F] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
-              3
-            </span>
-          </div>
+            {totalItems > 0 && (
+              <span className="absolute top-0 right-0 bg-[#FF5E1F] text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in-50 duration-300">
+                {totalItems}
+              </span>
+            )}
+          </Link>
           
-          <div className="cursor-pointer hover:text-[#1A2E35] transition-colors">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div>
+          <Link href="/login" className="text-neutral-700 hover:text-orange-500 transition-all p-2 rounded-full hover:bg-neutral-50 active:scale-95">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </Link>
         </div>
       </div>
     </nav>

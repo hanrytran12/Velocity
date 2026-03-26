@@ -1,4 +1,5 @@
 using Application.Features.Products.Queries.GetProductById;
+using Application.Features.Products.Queries.GetProductReviews;
 using Application.Features.Products.Queries.GetProducts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,24 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetProductById(Guid id)
     {
         var result = await _mediator.Send(new GetProductByIdQuery(id));
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        if (result.Error.Contains("not found", StringComparison.OrdinalIgnoreCase))
+        {
+            return NotFound(result.Error);
+        }
+
+        return BadRequest(result.Error);
+    }
+
+    [HttpGet("{id:guid}/reviews")]
+    public async Task<IActionResult> GetProductReviews(Guid id)
+    {
+        var result = await _mediator.Send(new GetProductReviewsQuery(id));
 
         if (result.IsSuccess)
         {

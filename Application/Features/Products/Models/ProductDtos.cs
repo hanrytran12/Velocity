@@ -43,6 +43,13 @@ public record ProductVariantDto(
     int StockQuantity,
     string SKU);
 
+public record ProductReviewDto(
+    Guid Id,
+    int Rating,
+    string Comment,
+    DateTime CreatedAt,
+    string CustomerName);
+
 public record PaginatedResponse<T>(
     IReadOnlyList<T> Items,
     int TotalCount,

@@ -14,6 +14,8 @@ public class VelocityDbContext : IdentityDbContext<ApplicationUser, IdentityRole
 
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
+    public DbSet<ProductSpec> ProductSpecs => Set<ProductSpec>();
+    public DbSet<ProductImage> ProductImages => Set<ProductImage>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Payment> Payments => Set<Payment>();

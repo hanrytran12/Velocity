@@ -17,7 +17,10 @@ public class ProductVariantConfiguration : IEntityTypeConfiguration<ProductVaria
         builder.Property(pv => pv.Color)
             .IsRequired()
             .HasMaxLength(50);
-            
+
+        builder.Property(pv => pv.ColorHex)
+            .HasMaxLength(20);
+
         builder.Property(pv => pv.SKU)
             .IsRequired()
             .HasMaxLength(100);

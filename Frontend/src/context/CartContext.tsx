@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface CartItem {
-  id: number;
+  id: string;
   name: string;
   brand: string;
   price: string;
@@ -17,9 +17,9 @@ export interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, delta: number) => void;
-  toggleSelection: (id: number) => void;
+  removeFromCart: (id: string) => void;
+  updateQuantity: (id: string, delta: number) => void;
+  toggleSelection: (id: string) => void;
   selectAll: (selected: boolean) => void;
   totalItems: number;
   selectedCount: number;
@@ -31,8 +31,8 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Initial mock data
   const [cart, setCart] = useState<CartItem[]>([
-    { id: 1, name: "Adidas Terrex Agravic Speed Ultra", brand: "adidas", price: "$220.00", image: "/images/products/Ultra Trail Terrex Agravic Speed.jpg", size: "10.5", color: "Core Black", quantity: 3, selected: true },
-    { id: 2, name: "Adidas Adizero Prime X 2.0 STRUNG", brand: "adidas", price: "$250.00", image: "/images/products/Adizero Prime X 2.0 STRUNG.jpg", size: "9", color: "Solar Red", quantity: 2, selected: true },
+    { id: "seed-1", name: "Adidas Terrex Agravic Speed Ultra", brand: "adidas", price: "$220.00", image: "/images/products/Ultra Trail Terrex Agravic Speed.jpg", size: "10.5", color: "Core Black", quantity: 3, selected: true },
+    { id: "seed-2", name: "Adidas Adizero Prime X 2.0 STRUNG", brand: "adidas", price: "$250.00", image: "/images/products/Adizero Prime X 2.0 STRUNG.jpg", size: "9", color: "Solar Red", quantity: 2, selected: true },
   ]);
 
   const addToCart = (item: CartItem) => {
@@ -54,26 +54,26 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: string) => {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const updateQuantity = (id: number, delta: number) => {
+  const updateQuantity = (id: string, delta: number) => {
     setCart((prev) =>
-      prev.map((i) => {
-        if (i.id === id) {
-          const newQty = Math.max(0, i.quantity + delta);
-          return { ...i, quantity: newQty };
-        }
-        return i;
-      }).filter((i) => i.quantity > 0)
+      prev
+        .map((i) => {
+          if (i.id === id) {
+            const newQty = Math.max(0, i.quantity + delta);
+            return { ...i, quantity: newQty };
+          }
+          return i;
+        })
+        .filter((i) => i.quantity > 0)
     );
   };
 
-  const toggleSelection = (id: number) => {
-    setCart((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i))
-    );
+  const toggleSelection = (id: string) => {
+    setCart((prev) => prev.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i)));
   };
 
   const selectAll = (selected: boolean) => {

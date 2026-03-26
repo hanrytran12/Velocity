@@ -1,12 +1,82 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
-import { products } from "@/data/products";
+import { useEffect, useState } from "react";
+import { apiGet, PaginatedResponse, ProductDetailDto, ProductListItemDto } from "@/lib/velocityApi";
 import ProductCard from "@/components/ProductCard";
 
 
+type UiProduct = {
+  id: string;
+  name: string;
+  brand: string;
+  category: string;
+  price: string;
+  oldPrice?: string;
+  badge?: string;
+  badgeColor?: string;
+  image: string;
+  colors: { name: string; hex: string }[];
+  sizes: string[];
+};
+
+function uniqBy<T, K>(items: T[], getKey: (x: T) => K): T[] {
+  const seen = new Set<K>();
+  const out: T[] = [];
+  for (const it of items) {
+    const k = getKey(it);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(it);
+  }
+  return out;
+}
+
+function mapDetailToUi(p: ProductDetailDto): UiProduct {
+  const colors = uniqBy(
+    p.variants.map((v) => ({ name: v.color, hex: v.colorHex ?? "#111111" })),
+    (c) => `${c.name}|${c.hex}`
+  );
+
+  const sizes = uniqBy(p.variants.map((v) => v.size), (s) => s).sort((a, b) => parseFloat(a) - parseFloat(b));
+  const image = p.images.find((i) => i.isPrimary)?.url ?? p.images[0]?.url ?? "/images/products/placeholder.png";
+
+  return {
+    id: p.id,
+    name: p.name,
+    brand: p.brand,
+    category: p.category,
+    price: `$${p.price.toFixed(2)}`,
+    oldPrice: p.oldPrice != null ? `$${Number(p.oldPrice).toFixed(2)}` : undefined,
+    badge: p.badge ?? undefined,
+    badgeColor: p.badgeColor ?? undefined,
+    image,
+    colors,
+    sizes,
+  };
+}
+
 export default function Home() {
-  const eliteSelection = products.slice(-4);
+  const [eliteSelection, setEliteSelection] = useState<UiProduct[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const list = await apiGet<PaginatedResponse<ProductListItemDto>>("/api/products?pageNumber=1&pageSize=12");
+        const pick = list.items.slice(0, 4).map((x) => x.id);
+        const details = await Promise.all(pick.map((id) => apiGet<ProductDetailDto>(`/api/products/${id}`)));
+        if (!cancelled) setEliteSelection(details.map(mapDetailToUi));
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
 
 

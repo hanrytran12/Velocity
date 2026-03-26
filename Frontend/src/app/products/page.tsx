@@ -1,10 +1,70 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "@/components/ProductCard";
-import { products, Product } from "@/data/products";
+import { apiGet, PaginatedResponse, ProductDetailDto, ProductListItemDto } from "@/lib/velocityApi";
+
+type UiProduct = {
+  id: string;
+  name: string;
+  brand: string;
+  category: string;
+  price: string;
+  oldPrice?: string;
+  badge?: string;
+  badgeColor?: string;
+  image: string;
+  colors: { name: string; hex: string }[];
+  sizes: string[];
+  rating: number;
+  reviews: number;
+};
+
+function uniqBy<T, K>(items: T[], getKey: (x: T) => K): T[] {
+  const seen = new Set<K>();
+  const out: T[] = [];
+  for (const it of items) {
+    const k = getKey(it);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(it);
+  }
+  return out;
+}
+
+function mapDetailToUi(p: ProductDetailDto): UiProduct {
+  const colors = uniqBy(
+    p.variants.map((v) => ({ name: v.color, hex: v.colorHex ?? "#111111" })),
+    (c) => `${c.name}|${c.hex}`
+  );
+
+  const sizes = uniqBy(p.variants.map((v) => v.size), (s) => s)
+    .sort((a, b) => parseFloat(a) - parseFloat(b));
+
+  return {
+    id: p.id,
+    name: p.name,
+    brand: p.brand,
+    category: p.category,
+    price: `$${p.price.toFixed(2)}`,
+    oldPrice: p.oldPrice != null ? `$${Number(p.oldPrice).toFixed(2)}` : undefined,
+    badge: p.badge ?? undefined,
+    badgeColor: p.badgeColor ?? undefined,
+    image:
+      p.images.find((i) => i.isPrimary)?.url ??
+      p.images[0]?.url ??
+      "/images/products/placeholder.png",
+    colors,
+    sizes,
+    rating: p.averageRating,
+    reviews: p.reviews,
+  };
+}
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<UiProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Newest");
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -12,12 +72,40 @@ export default function ProductsPage() {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState(300);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setLoading(true);
+        const list = await apiGet<PaginatedResponse<ProductListItemDto>>("/api/products?pageNumber=1&pageSize=50");
+
+        // Fetch details so we can derive sizes/colors for UI.
+        const details = await Promise.all(
+          list.items.map((x) => apiGet<ProductDetailDto>(`/api/products/${x.id}`))
+        );
+
+        if (!cancelled) {
+          setProducts(details.map(mapDetailToUi));
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Derived unique sizes from product data for synchronization
   const availableSizes = useMemo(() => {
     const allSizes = new Set<string>();
-    products.forEach(p => p.sizes.forEach(s => allSizes.add(s)));
+    products.forEach((p) => p.sizes.forEach((s) => allSizes.add(s)));
     return Array.from(allSizes).sort((a, b) => parseFloat(a) - parseFloat(b));
-  }, []);
+  }, [products]);
 
   const sortOptions = [
     "Newest",
@@ -85,7 +173,8 @@ export default function ProductsPage() {
     } else if (sortBy === "Price: High to Low") {
       result.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
     } else if (sortBy === "Newest") {
-      result.sort((a, b) => b.id - a.id);
+      // API already returns newest by default (sortBy=newest)
+      // Keep current order.
     }
 
     return result;

@@ -61,6 +61,17 @@ function mapDetailToUi(p: ProductDetailDto): UiProduct {
   };
 }
 
+function normalizeCategoryParam(raw: string): string {
+  const c = raw.trim().toUpperCase();
+
+  // Allow short aliases from homepage pills
+  if (c === "ROAD") return "ROAD RUNNING";
+  if (c === "TRAIL") return "TRAIL RUNNING";
+  if (c === "TRACK" || c === "TRACKFIELD" || c === "TRACK & FIELD" || c === "TRACK AND FIELD") return "TRACK & FIELD";
+
+  return c;
+}
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<UiProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,6 +83,29 @@ export default function ProductsPage() {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState(300);
 
+  const applyCategoryFromUrl = () => {
+    if (typeof window === "undefined") return;
+    const raw = new URLSearchParams(window.location.search).get("category");
+    if (!raw) return;
+
+    const cat = normalizeCategoryParam(raw);
+
+    setSelectedBrands([]);
+    setSelectedSizes([]);
+    setMaxPrice(300);
+    setSortBy("Newest");
+    setSelectedCategories([cat]);
+  };
+
+  useEffect(() => {
+    applyCategoryFromUrl();
+
+    // Handle back/forward navigation
+    const onPop = () => applyCategoryFromUrl();
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -81,9 +115,7 @@ export default function ProductsPage() {
         const list = await apiGet<PaginatedResponse<ProductListItemDto>>("/api/products?pageNumber=1&pageSize=50");
 
         // Fetch details so we can derive sizes/colors for UI.
-        const details = await Promise.all(
-          list.items.map((x) => apiGet<ProductDetailDto>(`/api/products/${x.id}`))
-        );
+        const details = await Promise.all(list.items.map((x) => apiGet<ProductDetailDto>(`/api/products/${x.id}`)));
 
         if (!cancelled) {
           setProducts(details.map(mapDetailToUi));
@@ -138,6 +170,8 @@ export default function ProductsPage() {
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
+
+    if (loading) return [];
 
     // Filter by Brand
     if (selectedBrands.length > 0) {
@@ -345,7 +379,9 @@ export default function ProductsPage() {
 
         {/* Main Content */}
         <div className="flex-grow">
-          {filteredProducts.length > 0 ? (
+          {loading ? (
+            <div className="py-32 text-neutral-400 font-bold">Loading products...</div>
+          ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16 animate-in fade-in duration-500">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />

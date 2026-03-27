@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiGet, PaginatedResponse, ProductDetailDto, ProductListItemDto } from "@/lib/velocityApi";
 import ProductCard from "@/components/ProductCard";
@@ -131,25 +132,36 @@ export default function Home() {
             { id: 'TRAIL', active: false, color: 'bg-[#F2F5F7]', img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&q=80&w=200' },
             { id: 'TRACK & FIELD', active: false, color: 'bg-[#F2F5F7]', img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&q=80&w=200' }
           ].map((cat) => (
-
-            <div key={cat.id} className="flex flex-col items-center gap-4 group cursor-pointer">
-              <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all ${
-                cat.active ? 'ring-4 ring-orange-500 ring-offset-4 shadow-xl' : 'hover:scale-105 ring-1 ring-neutral-200 ring-offset-2'
-              } ${cat.color}`}>
+            <Link
+              key={cat.id}
+              href={`/products?category=${encodeURIComponent(cat.id)}`}
+              className="flex flex-col items-center gap-4 group cursor-pointer"
+            >
+              <div
+                className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all ${
+                  cat.active
+                    ? "ring-4 ring-orange-500 ring-offset-4 shadow-xl"
+                    : "hover:scale-105 ring-1 ring-neutral-200 ring-offset-2"
+                } ${cat.color}`}
+              >
                 <div className="w-full h-full rounded-full overflow-hidden">
-                   <Image 
-                     src={cat.img} 
-                     alt={cat.id}
-                     width={100}
-                     height={100}
-                     className="object-cover w-full h-full rounded-full transition-transform duration-500 group-hover:scale-110"
-                   />
+                  <Image
+                    src={cat.img}
+                    alt={cat.id}
+                    width={100}
+                    height={100}
+                    className="object-cover w-full h-full rounded-full transition-transform duration-500 group-hover:scale-110"
+                  />
                 </div>
               </div>
-              <span className={`text-[13px] font-black uppercase tracking-widest ${cat.active ? 'text-[#1A2E35]' : 'text-neutral-400 group-hover:text-[#1A2E35]'}`}>
+              <span
+                className={`text-[13px] font-black uppercase tracking-widest ${
+                  cat.active ? "text-[#1A2E35]" : "text-neutral-400 group-hover:text-[#1A2E35]"
+                }`}
+              >
                 {cat.id}
               </span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

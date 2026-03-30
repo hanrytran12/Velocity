@@ -2,17 +2,30 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import ProfileMenu from "@/components/ProfileMenu";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   const { totalItems } = useCart();
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchInput.trim())}`);
+    }
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm py-3' : 'bg-[#F2F5F7]/50 backdrop-blur-sm py-5'}`}>
@@ -42,18 +55,22 @@ export default function Header() {
 
 
         {/* Search Bar */}
-        <div className="hidden md:flex flex-grow max-w-xl mx-4 relative">
+        <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-grow max-w-xl mx-4 relative">
           <div className="w-full relative">
             <input 
-              type="text" 
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search performance gear..." 
               className="w-full bg-[#F3F4F6] border-none rounded-full py-3.5 pl-14 pr-6 text-sm font-medium focus:ring-2 focus:ring-orange-500/10 transition-all placeholder:text-neutral-400"
             />
-            <svg className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <button type="submit" className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors bg-none border-none p-0 cursor-pointer">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
           </div>
-        </div>
+        </form>
 
 
         {/* Right Icons */}
@@ -71,9 +88,13 @@ export default function Header() {
             )}
           </Link>
           
-          <Link href="/login" className="text-neutral-700 hover:text-orange-500 transition-all p-2 rounded-full hover:bg-neutral-50 active:scale-95">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </Link>
+          {isLoggedIn ? (
+            <ProfileMenu />
+          ) : (
+            <Link href="/login" className="text-neutral-700 hover:text-orange-500 transition-all p-2 rounded-full hover:bg-neutral-50 active:scale-95">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

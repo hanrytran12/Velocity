@@ -3,18 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     // Mimic API delay
     setTimeout(() => {
+      const displayName = email.split("@")[0]; // Use email prefix as display name
+      login(email, displayName);
+      sessionStorage.setItem("login_success_banner", "1");
       setIsLoading(false);
       window.location.href = "/";
     }, 1500);
